@@ -1,17 +1,65 @@
 # edu-minor-gate-checker
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Domain Profile](https://img.shields.io/badge/domain-edu%20%7C%20domain%2F1.0-blue.svg)](domain.manifest.json)
+[![Status: RESERVED](https://img.shields.io/badge/status-RESERVED%20%7C%20open%20claim-orange.svg)](domain.manifest.json)
+[![Gate: five-level](https://img.shields.io/badge/gate-silent%2Fwarn%2Fconfirm%2Fblock%2Frequire--owner-8a2be2.svg)](gate-map.json)
+[![Privacy: default-off](https://img.shields.io/badge/privacy-default--off-brightgreen.svg)](privacy.json)
+
 > **状态：RESERVED（占位 · 开放认领）** — 本仓已按平台协议规范建好行业接入四件套骨架，
 > 等待具备本域资质的运营方认领并填充真实规则。
 
 把「这个教育应用几岁能用、未成年人信息能不能处理」拆成可核验的属性，让 AI 只做提示，不做适龄认定。
 
-## 这个域管什么
+**关键词 / Keywords**：未成年人保护 · 适龄分级 · 监护人同意 · 教师资格 · AI 参与披露 · domain profile · compliance checker · regulatory verification · minor protection · age rating · guardian consent · education · MCP tool · attribute verification · gate map · privacy by default-off
+
+---
+
+## 这个域管什么 / What this domain covers
 
 面向未成年人的教育应用：适龄分级与监护人同意核验
 
 未成年人是最高保护等级群体。适龄分级、监护人同意、教师资质、AI 参与披露，任何一项缺失都可能直接构成违规。AI 能做的是把这些要件摆清楚，认定权在学校、家长与监管部门。
 
-## 域标识
+This domain is the **education · minor protection & age-rating** profile of a multi-domain verification platform. It turns "for which ages is this app suitable, and may minors' data be processed" into verifiable attributes; the AI only surfaces the missing pieces — age suitability and compliance determination stay with the school, the parents and the regulator.
+
+---
+
+## 快速开始 / Quick Start
+
+> 本仓是**域声明骨架**（行业接入四件套 JSON），不是可运行的应用程序。克隆后用标准 JSON 工具即可校验结构。
+
+```bash
+# 1. 克隆本仓 / clone this repo
+git clone https://github.com/SynomosAI/edu-minor-gate-checker.git
+cd edu-minor-gate-checker
+
+# 2. 校验四件套结构是否为合法 JSON（任意一个报错即骨架不完整）
+python -m json.tool domain.manifest.json > /dev/null
+python -m json.tool gate-map.json        > /dev/null
+python -m json.tool privacy.json         > /dev/null
+python -m json.tool checker.io.json     > /dev/null
+
+# 3. 查看本域名称与红线 / print domain name and red lines
+python -c "import json;m=json.load(open('domain.manifest.json',encoding='utf-8'));print(m['domain_name']);[print('-',r) for r in m['red_lines']]"
+```
+
+核验器（MCP 工具）的输入输出契约见 `checker.io.json`。一个最小调用示例：
+
+```json
+{
+  "subject_ref": "mpp:cn:5b8c9d2e",
+  "attribute_keys": ["edu.age_rating", "edu.guardian_consent"],
+  "evidence": ["tsa:2026-09-12#sha256:1a2b..."],
+  "request_id": "req-20260912-0003"
+}
+```
+
+> 核验器只有「出示与核验」一个动作，**没有「判定」选项**——`适合某年龄段`、`内容已合规`、`学习成效确定性承诺`等结论性输出均在 `checker.io.json` 的 `_forbidden_outputs` 黑名单中。
+
+---
+
+## 域标识 / Domain identity
 
 | 项 | 值 |
 |---|---|
@@ -21,7 +69,7 @@
 | 当前状态 | `RESERVED` |
 | 占位时间 | 2026-09-12 |
 
-## 属性清单
+## 属性清单 / Attributes
 
 | 属性键 | 类型 | 说明 |
 |---|---|---|
@@ -31,7 +79,7 @@
 | `edu.ai_tutor_disclosure` | boolean | 是否向学习者与监护人披露 AI 参与教学的情况 |
 | `edu.content_source` | string | 教学内容来源与审核记录引用 |
 
-## 本域红线（不可逾越，机器可读）
+## 本域红线（不可逾越，机器可读）/ Red lines
 
 1. 未成年人个人信息的处理须取得监护人同意，AI 不得在无同意依据时输出可处理的表述
 2. 不得对未成年人输出学习成效、能力评级或升学结果的确定性承诺
@@ -40,16 +88,34 @@
 > 红线在 `gate-map.json` 中均有对应阻断规则。平台校验器会检查「每条红线都有规则覆盖」，
 > 缺失即校验失败——**制度与系统不允许不同步**。
 
-## 行业接入四件套
+## 行业接入四件套 / The four-piece access set
 
 | 文件 | 作用 |
 |---|---|
 | `domain.manifest.json` | 本域声明：属性清单、签发方要求、有效期、红线 |
 | `gate-map.json` | 本域「什么动作要多少摩擦」：silent / warn / confirm / block / require-owner |
 | `privacy.json` | 本域隐私声明：默认关闭、最小必要、可撤回、可删除 |
-| `checker` | 本域核验器（MCP 工具，**只出示核验，不下判定**） |
+| `checker.io.json` | 本域核验器（MCP 工具，**只出示核验，不下判定**） |
 
-## 核心原则
+## 仓库结构 / Repository layout
+
+```text
+edu-minor-gate-checker/
+├── README.md              # 本文件（中文为主，英文对照）
+├── README.en.md           # English README
+├── LICENSE                # MIT License（© 2026 SynomosAI）
+├── CODEOWNERS             # @SynomosAI/synomosai-gov
+├── domain.manifest.json  # 本域声明：属性清单 / 签发方 / 有效期 / 红线
+├── gate-map.json          # 本域摩擦分级：silent/warn/confirm/block/require-owner
+├── privacy.json           # 本域隐私声明：默认关闭 / 最小必要 / 可撤回 / 可删除
+├── checker.io.json         # 本域核验器（MCP 工具）IO 契约
+├── llms.txt               # 给 AI 的最小索引（llms.txt 标准）
+├── llms-full.txt          # 给 AI 的完整文本
+├── AGENTS.md              # 给 AI Agent 的工作指引
+└── SECURITY.md            # 安全策略与报告途径
+```
+
+## 核心原则 / Core principles
 
 **平台只当擂台，不当货架。** 本域的核验器只回答「这条声明是否可核验、缺什么要件」，
 不回答「这件事是否合规、该不该做」。判定权在本域的资质方、监管方与人。
@@ -57,7 +123,7 @@
 **隐私是准入条件，不是整改事项。** 缺失 `privacy.json` 或任一必填字段不符，
 符合性校验直接失败——不是警告，是拒绝接入。
 
-## 参考依据
+## 参考依据 / References
 
 - 中华人民共和国未成年人保护法
 - 未成年人网络保护条例
@@ -65,7 +131,7 @@
 
 > 上列依据仅用于说明本域属性的来源与口径，不构成法律意见。具体适用以现行有效文本与主管部门解释为准。
 
-## 认领方式
+## 认领方式 / How to claim
 
 本域面向具备相应资质的机构开放。认领后请：
 
@@ -73,6 +139,8 @@
 2. 按本域现行有效规则校准属性取值与红线表述
 3. 跑平台侧校验器自测（五项判据全过方可提交）
 4. 提 PR，附资质证明与规则依据
+
+---
 
 ## 许可与署名
 
